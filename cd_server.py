@@ -33,7 +33,7 @@ def listen_local():
 
 
 def handle_request(conn, address):
-    key = '-'.join(address)
+    key = '-'.join([str(i) for i in address])
     request = queue.Queue()
     response = queue.Queue()
     store[key] = [request, response]
@@ -48,14 +48,14 @@ def handle_request(conn, address):
 def set_request(conn, key):
     while True:
         data = conn.recv(4096)
-        print("Server set request: " + data)
-        store[key][1].put(data)
+        print("Server set request: " + data.decode('utf-8'))
+        store[key][0].put(data)
 
 
 def get_request(conn, key):
     while True:
-        data = store[key][1].get()
-        print("Server get request: " + data)
+        data = store[key][0].get()
+        print("Server get request: " + data.decode('utf-8'))
         conn.send(key + tag + data)
 
 
@@ -63,14 +63,14 @@ def set_response(conn):
     while True:
         data = conn.recv(4096)
         key = data.split(tag)[0]
-        print("Server set response: " + data)
-        store[key][2].put(''.join(data.split(tag)[1:]))
+        print("Server set response: " + data.decode('utf-8'))
+        store[key][1].put(''.join(data.split(tag)[1:]))
 
 
 def get_response(conn, key):
     while True:
-        data = store[key][2].get()
-        print("Server get response: " + data)
+        data = store[key][1].get()
+        print("Server get response: " + data.decode('utf-8'))
         conn.send(data)
 
 
