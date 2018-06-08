@@ -26,18 +26,18 @@ def listen_server():
 def listen_local(b):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('127.0.0.1', 4000))
-    s.sendall(b)
+    s.sendall(b.encode('utf-8'))
     reply = s.recv(409600)
     return reply
 
 
 def handle_request(server, data):
-    key = data.split(tag)[0]
-    _data = ''.join(data.split(tag)[1:])
+    key = data.decode('utf-8').split(tag)[0]
+    _data = ''.join(data.decode('utf-8').split(tag)[1:])
     _response = listen_local(_data)
-    response = key + tag + _response
-    print("Client set response: " + response.decode('utf-8'))
-    server.sendall(response)
+    response = key + tag + _response.decode('utf-8')
+    print("Client set response: " + response)
+    server.sendall(response.encode('utf-8'))
 
 
 if __name__ == "__main__":
