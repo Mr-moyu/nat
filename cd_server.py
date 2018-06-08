@@ -56,15 +56,15 @@ def get_request(conn, key):
     while True:
         data = store[key][0].get()
         print("Server get request: " + data.decode('utf-8'))
-        conn.send(key + tag + data)
+        conn.send((key + tag + data.decode('utf-8')).encode('utf-8'))
 
 
 def set_response(conn):
     while True:
         data = conn.recv(4096)
-        key = data.split(tag)[0]
+        key = data.decode('utf-8').split(tag)[0]
         print("Server set response: " + data.decode('utf-8'))
-        store[key][1].put(''.join(data.split(tag)[1:]))
+        store[key][1].put(''.join(data.decode('utf-8').split(tag)[1:]).encode('utf-8'))
 
 
 def get_response(conn, key):
