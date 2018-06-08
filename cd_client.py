@@ -17,6 +17,8 @@ def listen_server():
     print(server.recv(4096).decode('utf-8'))
     while True:
         data = server.recv(409600)
+        if data == b'':
+            continue
         print("Client get request: " + data.decode('utf-8'))
         threading.Thread(target=handle_request, args=(server, data))
 

@@ -48,6 +48,8 @@ def handle_request(conn, address):
 def set_request(conn, key):
     while True:
         data = conn.recv(4096)
+        if data == b'':
+            continue
         print("Server set request: " + data.decode('utf-8'))
         store[key][0].put(data)
 
