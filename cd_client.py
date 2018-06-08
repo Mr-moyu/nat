@@ -13,8 +13,11 @@ def listen_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     remote_ip = socket.gethostbyname(host)
     server.connect((remote_ip, port))
+    server.send("Hello Server")
+    print(server.recv(4096))
     while True:
         data = server.recv(409600)
+        print("Client get request: " + data)
         threading.Thread(target=handle_request, args=(server, data))
 
 
@@ -31,6 +34,7 @@ def handle_request(server, data):
     _data = ''.join(data.split(tag)[1:])
     _response = listen_local(_data)
     response = key + tag + _response
+    print("Client set response: " + response)
     server.sendall(response)
 
 

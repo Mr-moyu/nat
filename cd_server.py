@@ -4,11 +4,15 @@ import threading
 import queue
 
 store = dict()
+tag = "\r\n-----\r\n"
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(('0.0.0.0', 4000))
 sock.listen(1)
 CONN, ADDRESS = sock.accept()
+print(ADDRESS)
+print(CONN.recv(4096))
+CONN.send("hello Client")
 
 
 def listen_out():
@@ -18,6 +22,7 @@ def listen_out():
     while True:
         try:
             conn, address = sock.accept()
+            print(address)
             threading.Thread(target=handle_request, args=(conn, address)).start()
         except Exception as e:
             print(e)
@@ -43,25 +48,29 @@ def handle_request(conn, address):
 def set_request(conn, key):
     while True:
         data = conn.recv(4096)
+        print("Server set request: " + data)
         store[key][1].put(data)
 
 
 def get_request(conn, key):
     while True:
         data = store[key][1].get()
-        conn.send(key + "\r\n\r\n" +data)
+        print("Server get request: " + data)
+        conn.send(key + tag + data)
 
 
 def set_response(conn):
     while True:
         data = conn.recv(4096)
-        key = data.split("\r\n\r\n")[0]
-        store[key][2].put(''.join(data.split("\r\n\r\n")[1:]))
+        key = data.split(tag)[0]
+        print("Server set response: " + data)
+        store[key][2].put(''.join(data.split(tag)[1:]))
 
 
 def get_response(conn, key):
     while True:
         data = store[key][2].get()
+        print("Server get response: " + data)
         conn.send(data)
 
 
@@ -73,5 +82,3 @@ if __name__ == "__main__":
 
     t1.join()
     t2.join()
-
-
