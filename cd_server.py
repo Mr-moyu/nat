@@ -11,8 +11,8 @@ sock.bind(('0.0.0.0', 4000))
 sock.listen(1)
 CONN, ADDRESS = sock.accept()
 print(ADDRESS)
-print(CONN.recv(4096))
-CONN.send("hello Client")
+print(CONN.recv(4096).decode('utf-8'))
+CONN.send("hello Client".encode('utf-8'))
 
 
 def listen_out():
