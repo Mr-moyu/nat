@@ -20,7 +20,7 @@ def listen_server():
         if data == b'':
             continue
         print("Client get request: " + data.decode('utf-8'))
-        threading.Thread(target=handle_request, args=(server, data))
+        threading.Thread(target=handle_request, args=(server, data)).start()
 
 
 def listen_local(b):
@@ -35,8 +35,9 @@ def handle_request(server, data):
     key = data.decode('utf-8').split(tag)[0]
     _data = ''.join(data.decode('utf-8').split(tag)[1:])
     _response = listen_local(_data)
+    print(_response)
+    # print("Client set response: " + _response.decode('utf-8'))
     response = key + tag + _response.decode('utf-8')
-    print("Client set response: " + response)
     server.sendall(response.encode('utf-8'))
 
 
